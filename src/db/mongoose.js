@@ -10,16 +10,22 @@ mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
 //mongoose.model(<collection name>, {<document structure and options>})
 const User = mongoose.model('User', {
     name:{
-        type: String
+        type: String,
+        required: true
     },
     age: {
-        type: Number
+        type: Number,
+        validate(value){
+            if(value < 0){
+                throw new Error('Age must be a positive number')
+            }
+        }
     }
 });
 
 //create User instance jiro
 const jiro = new User({
-    name: 'jiro',
+    name: "jiro",
     age: 28
 });
 
@@ -30,22 +36,23 @@ jiro.save().then((data)=>{
     console.log(error)
 });
 
-const Task = new mongoose.model('Task',{
-    description: {
-        type: String
-    },
-    completed: {
-        type: Boolean
-    }
-});
+// const Task = new mongoose.model('Task',{
+//     description: {
+//         type: String,
+//         required: true
+//     },
+//     completed: {
+//         type: Boolean
+//     }
+// });
 
-const doLaundryTask = new Task({
-    description: 'Do Laundry',
-    completed: false
-});
+// const doLaundryTask = new Task({
+//     description: 'Do Laundry',
+//     completed: false
+// });
 
-doLaundryTask.save().then((resolved)=>{
-    console.log(resolved);
-}).catch((error)=>{
-    console.log(error);
-})
+// doLaundryTask.save().then((resolved)=>{
+//     console.log(resolved);
+// }).catch((error)=>{
+//     console.log(error);
+// })
