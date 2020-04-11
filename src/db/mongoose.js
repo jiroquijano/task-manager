@@ -48,38 +48,39 @@ const User = mongoose.model('User', {
     }
 });
 
-//create User instance jiro
-const jiro = new User({
-    name: "jiro",
-    age: 28,
-    email: "jiroquijano@gmail.com",
-    password: "Networklabs"
-});
-
-// commit/save it to mongodb
-jiro.save().then((data)=>{
-    console.log(data);
-}).catch((error)=>{
-    console.log(error)
-});
-
-// const Task = new mongoose.model('Task',{
-//     description: {
-//         type: String,
-//         required: true
-//     },
-//     completed: {
-//         type: Boolean
-//     }
+// //create User instance jiro
+// const jiro = new User({
+//     name: "jiro",
+//     age: 28,
+//     email: "jiroquijano@gmail.com",
+//     password: "Networklabs"
 // });
 
-// const doLaundryTask = new Task({
-//     description: 'Do Laundry',
-//     completed: false
-// });
-
-// doLaundryTask.save().then((resolved)=>{
-//     console.log(resolved);
+// // commit/save it to mongodb
+// jiro.save().then((data)=>{
+//     console.log(data);
 // }).catch((error)=>{
-//     console.log(error);
-// })
+//     console.log(error)
+// });
+
+const Task = new mongoose.model('Task',{
+    description: {
+        type: String,
+        trim: true,
+        required: true
+    },
+    completed: {
+        type: Boolean,
+        default: false
+    }
+});
+
+const doLaundryTask = new Task({
+    description: 'Clean house'
+});
+
+doLaundryTask.save().then((resolved)=>{
+    console.log(resolved);
+}).catch((error)=>{
+    console.log(error);
+})
