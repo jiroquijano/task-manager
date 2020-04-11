@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
     useNewUrlParser:true,
@@ -20,13 +21,22 @@ const User = mongoose.model('User', {
                 throw new Error('Age must be a positive number')
             }
         }
+    },
+    email:{
+        type: String,
+        validate(emailAddress){
+            if (!validator.isEmail(emailAddress)){
+                throw new Error('Please enter a valid email address');
+            }
+        }
     }
 });
 
 //create User instance jiro
 const jiro = new User({
     name: "jiro",
-    age: 28
+    age: 28,
+    email: "jiroquijano@gmail.com"
 });
 
 // commit/save it to mongodb
