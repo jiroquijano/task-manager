@@ -11,7 +11,7 @@ app.use(express.json()); //configure express to parse incoming json files
 app.post('/users',(req,res)=>{
     const user = new User(req.body);
     user.save().then((data)=>{
-        res.send(data);
+        res.status(201).send(data);
     }).catch((error)=>{
         res.status(400).send(error);
     });
@@ -20,7 +20,7 @@ app.post('/users',(req,res)=>{
 app.post('/tasks',(req,res)=>{
     const task = new Task(req.body);
     task.save().then((data)=>{
-        res.send(data);
+        res.status(201).send(data);
     }).catch((error)=>{
         res.status(400).send(error);
     });
