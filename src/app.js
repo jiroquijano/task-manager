@@ -26,6 +26,44 @@ app.post('/tasks',(req,res)=>{
     });
 });
 
+//get all users using mongoose method find()
+app.get('/users', (req,res)=>{
+    User.find({}).then((users)=>{
+        res.status(200).send(users);
+    }).catch((error)=>{
+        res.status(500).send();
+    });
+});
+
+//'route parameter' id under users route.
+app.get('/users/:id',(req,res)=>{
+    const idQuery = req.params.id;
+    User.findById(idQuery).then((user)=>{
+        if(!user) return res.status(404).send();
+        res.status(200).send(user);
+    }).catch((error)=>{
+        res.status(400).send(error);
+    })
+});
+
+app.get('/tasks',(req,res)=>{
+    Task.find({}).then((tasks)=>{
+        res.send(tasks);
+    }).catch((error)=>{
+        res.status(500).send();
+    });
+});
+
+app.get('/tasks/:id',(req,res)=>{
+    const taskId = req.params.id;
+    Task.findById(taskId).then((task)=>{
+        if(!task) return res.status(404).send();
+        res.send(task);
+    }).catch((error)=>{
+        res.status(500).send();
+    });
+});
+
 app.listen(port,()=>{
     console.log(`listening on port ${port}`);
 });
