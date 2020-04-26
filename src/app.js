@@ -72,6 +72,52 @@ app.get('/tasks/:id',async (req,res)=>{
 
 });
 
+app.patch('/users/:id', async (req,res)=>{
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name','email','password','age'];
+
+    const isKeyUpdateValid = updates.every((curr)=>{
+        return allowedUpdates.indexOf(curr) != -1;
+    });
+
+    if(!isKeyUpdateValid){
+        return res.status(400).send({error:'Requested key update not allowed!'});
+    }
+
+    try{
+        const idQuery = req.params.id;
+        const user = await User.findByIdAndUpdate(idQuery,req.body,{
+            new: true, //returns the updated entry instead of original
+            runValidators: true //validate update using validators
+        });
+        if(!user) res.status(404).send();
+        res.send(user);
+    }catch(error){
+        res.status(400).send(error);
+    }
+});
+
+app.patch('/tasks/:id', async (req,res)=>{
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['description','completed'];
+    const isUpdateAllowed = updates.every((curr)=>{
+        return allowedUpdates.includes(curr);
+    });
+
+    if(!isUpdateAllowed) return res.status(400).send({error:'Update contains invalid keys!'});
+    try{
+        const task = await Task.findByIdAndUpdate(req.params.id,req.body,{
+            new: true,
+            runValidators: true
+        });
+        if(!task) return res.status(404).send({error:`Task with id: ${req.params.id} not found!`});
+        res.send(task);
+    }catch(error){
+        res.send(400).send(error);
+    }
+
+});
+
 app.listen(port,()=>{
     console.log(`listening on port ${port}`);
 });
