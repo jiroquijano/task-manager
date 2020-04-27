@@ -118,6 +118,28 @@ app.patch('/tasks/:id', async (req,res)=>{
 
 });
 
+app.delete('/users/:id',async (req,res)=>{
+    try{
+        const userId = req.params.id;
+        const user = await User.findByIdAndDelete(userId);
+        if(!user) return res.status(404).send({error:`User with id: ${deleteId} not found!`});
+        res.send(user);
+    }catch(error){
+        res.status(500).send(error);
+    }
+});
+
+app.delete('/tasks/:id', async (req,res)=>{
+    try{
+        const taskId = req.params.id;
+        const task = await Task.findByIdAndDelete(taskId);
+        if(!task) return res.status(404).send({error:`Task with id: ${taskId} not found!`});
+        res.send(task);
+    }catch(error){
+        res.status(500).send(error);
+    }
+});
+
 app.listen(port,()=>{
     console.log(`listening on port ${port}`);
 });
