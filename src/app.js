@@ -113,7 +113,7 @@ app.patch('/tasks/:id', async (req,res)=>{
         if(!task) return res.status(404).send({error:`Task with id: ${req.params.id} not found!`});
         res.send(task);
     }catch(error){
-        res.send(400).send(error);
+        res.status(400).send(error);
     }
 
 });
