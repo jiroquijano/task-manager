@@ -19,7 +19,7 @@ router.post('/users',async (req,res)=>{
     try{
         const user = new User(req.body);
         await user.save();
-        res.send(user);
+        res.status(201).send(user);
     }catch(error){
         res.status(500).send(error);
     }
