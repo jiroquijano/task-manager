@@ -51,6 +51,15 @@ userSchema.pre('save', async function(next){
     next();
 });
 
+//this is how to add a user defined method for the userSchema
+userSchema.statics.findByCredentials = async(email, password) =>{
+    const user = await User.findOne({email});
+    if(!user) throw new Error('unable to log in');
+    const isMatch = await bcrypt.compare(password,user.password);
+    if(!isMatch) throw new Error('unable to log in!');
+    return user;
+};
+
 //create mongoose model for user with {name,age,email,password}
 //mongoose.model(<collection name>, schema)
 const User = mongoose.model('User', userSchema);

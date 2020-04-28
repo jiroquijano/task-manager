@@ -14,6 +14,15 @@ router.get('/users',async (req,res)=>{
     }
 });
 
+router.post('/users/login',async (req,res)=>{
+    try{
+        const user = await User.findByCredentials(req.body.email, req.body.password); //user defined method in user schema
+        res.send(user);
+    }catch(error){
+        res.send(error);
+    }
+});
+
 //Route for creating new user
 router.post('/users',async (req,res)=>{
     try{
@@ -24,6 +33,7 @@ router.post('/users',async (req,res)=>{
         res.status(500).send(error);
     }
 });
+
 
 //Route for getting user data by ID
 router.get('/users/:id',async (req,res)=>{
