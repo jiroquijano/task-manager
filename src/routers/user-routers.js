@@ -19,7 +19,7 @@ router.post('/users/login',async (req,res)=>{
         const user = await User.findByCredentials(req.body.email, req.body.password); //user defined method in user schema
         res.send(user);
     }catch(error){
-        res.send(error);
+        res.status(400).send(error);
     }
 });
 
