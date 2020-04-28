@@ -46,12 +46,18 @@ router.patch('/users/:id', async (req,res)=>{
     });
 
     if(!isKeyUpdateValid) return res.status(400).send({error:'invalid update parameters'});
+    
     try{
         const userId = req.params.id;
-        const user = await User.findByIdAndUpdate(userId,req.body,{
-            new: true,
-            runValidators:true
-        });
+        //instead of using findByIdAndUpdate, findById() and save() method was used so that the middleware for our User schema will fire.
+            // const user = await User.findByIdAndUpdate(userId,req.body,{
+            //     new: true,
+            //     runValidators:true
+            // });
+        const user = await User.findById(userId);
+        updates.forEach((update)=> user[update] = req.body[update]);
+        await user.save();
+
         if(!user) return res.status(404).send({error:`user with id: ${userId} not found`});
         res.send(user);
     }catch(error){

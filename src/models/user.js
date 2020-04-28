@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
-//create mongoose model for user with {name,age}
-//mongoose.model(<collection name>, {<document structure and options>})
-const User = mongoose.model('User', {
+const userSchema = new mongoose.Schema({
     name:{
         type: String,
         required: true,
@@ -23,7 +22,7 @@ const User = mongoose.model('User', {
         required: true,
         trim: true,
         lowercase: true,
-        validate(emailAddress){
+        validate(emailAddress){ //validate mongoose middleware 
             if (!validator.isEmail(emailAddress)){
                 throw new Error('Please enter a valid email address');
             }
@@ -41,5 +40,19 @@ const User = mongoose.model('User', {
         }
     }
 });
+
+//setup before 'save' event middleware for hashing password using bcrypt. 
+//2nd parameter should be normal function because arrow function does not do 'this' bindings.
+userSchema.pre('save', async function(next){
+    const user = this;
+    if(user.isModified('password')){ //mongoose method for checking if the field was modified
+        user.password = await bcrypt.hash(user.password,8);
+    }
+    next();
+});
+
+//create mongoose model for user with {name,age,email,password}
+//mongoose.model(<collection name>, schema)
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
