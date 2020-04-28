@@ -7,7 +7,7 @@ router.post('/tasks',async (req,res)=>{
     try{
         const newTask = new Task(req.body);
         await newTask.save();
-        res.send(newTask);
+        res.status(201).send(newTask);
     }catch(error){
         res.status(500).send(error);
     }
@@ -44,10 +44,11 @@ router.patch('/tasks/:id', async (req,res)=>{
 
     if(!isUpdateAllowed) return res.status(400).send({error:'Update contains invalid keys!'});
     try{
-        const task = await Task.findByIdAndUpdate(req.params.id,req.body,{
-            new: true,
-            runValidators: true
+        const task = await Task.findById(req.params.id);
+        updates.forEach((update)=>{
+            task[update] = req.body[update];
         });
+        task.save();
         if(!task) return res.status(404).send({error:`Task with id: ${req.params.id} not found!`});
         res.send(task);
     }catch(error){
