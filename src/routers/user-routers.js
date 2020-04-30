@@ -19,6 +19,19 @@ router.post('/users/login',async (req,res)=>{
     }
 });
 
+router.post('/users/logout', authMiddleware, async(req,res)=>{
+    try{
+        const user = req.user;
+        user.tokens = user.tokens.filter((curr)=>{
+            return curr.token != req.token;
+        });
+        await user.save();
+        res.send('Successfully logged out');
+    }catch(error){
+        res.status(400).send(error);
+    }
+});
+
 //Route for creating new user
 router.post('/users',async (req,res)=>{
     try{
@@ -33,7 +46,7 @@ router.post('/users',async (req,res)=>{
 
 
 //Route for getting user data by ID
-router.get('/users/:id',async (req,res)=>{
+router.get('/users/:id', authMiddleware,async (req,res)=>{
     const userId = req.params.id;
     try{
         const user = await User.findById(userId);
@@ -45,7 +58,7 @@ router.get('/users/:id',async (req,res)=>{
 });
 
 //Route for updating user data
-router.patch('/users/:id', async (req,res)=>{
+router.patch('/users/:id',authMiddleware, async (req,res)=>{
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name','email','password','age'];
     const isKeyUpdateValid = updates.every((curr)=>{
@@ -73,7 +86,7 @@ router.patch('/users/:id', async (req,res)=>{
 });
 
 //Route for deleting user document referenced by id
-router.delete('/users/:id',async (req,res)=>{
+router.delete('/users/:id', authMiddleware, async (req,res)=>{
     const userId = req.params.id;
     try{
         const user = await User.findByIdAndDelete(userId);
