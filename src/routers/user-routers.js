@@ -13,7 +13,10 @@ router.post('/users/login',async (req,res)=>{
     try{
         const user = await User.findByCredentials(req.body.email, req.body.password); //user defined method in user schema
         const token = await user.generateAuthToken();
-        res.send({user,token});
+        res.send({
+            user,
+            token
+        });
     }catch(error){
         res.status(400).send(error);
     }
@@ -29,6 +32,16 @@ router.post('/users/logout', authMiddleware, async(req,res)=>{
         res.send('Successfully logged out');
     }catch(error){
         res.status(400).send(error);
+    }
+});
+
+router.post('/users/logoutall', authMiddleware, async (req,res)=>{
+    try{
+        req.user.tokens = [];
+        await req.user.save();
+        res.send('Successfully logged out of all sessions!');
+    }catch(error){
+        res.status(500).send(error);
     }
 });
 
