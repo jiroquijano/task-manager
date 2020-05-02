@@ -58,20 +58,17 @@ router.post('/users',async (req,res)=>{
 });
 
 
-//Route for getting user data by ID
-router.get('/users/:id', authMiddleware,async (req,res)=>{
-    const userId = req.params.id;
+//Route for getting user data
+router.get('/users/me', authMiddleware,async (req,res)=>{
     try{
-        const user = await User.findById(userId);
-        if(!user) return res.status(404).send({error:'No user found'});
-        res.send(user);
+       res.send(req.user);
     }catch(error){
         res.send(400).send(error);
     }
 });
 
 //Route for updating user data
-router.patch('/users/:id',authMiddleware, async (req,res)=>{
+router.patch('/users/me',authMiddleware, async (req,res)=>{
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name','email','password','age'];
     const isKeyUpdateValid = updates.every((curr)=>{
@@ -81,30 +78,27 @@ router.patch('/users/:id',authMiddleware, async (req,res)=>{
     if(!isKeyUpdateValid) return res.status(400).send({error:'invalid update parameters'});
     
     try{
-        const userId = req.params.id;
         //instead of using findByIdAndUpdate, findById() and save() method was used so that the middleware for our User schema will fire.
             // const user = await User.findByIdAndUpdate(userId,req.body,{
             //     new: true,
             //     runValidators:true
-            // });
-        const user = await User.findById(userId);
-        updates.forEach((update)=> user[update] = req.body[update]);
-        await user.save();
+            // });   
+        updates.forEach((update)=> req.user[update] = req.body[update]);
+        await req.user.save();
+        res.send(req.user);
 
-        if(!user) return res.status(404).send({error:`user with id: ${userId} not found`});
-        res.send(user);
     }catch(error){
         res.status(400).send(error);
     }
 });
 
 //Route for deleting user document referenced by id
-router.delete('/users/:id', authMiddleware, async (req,res)=>{
-    const userId = req.params.id;
+router.delete('/users/me', authMiddleware, async (req,res)=>{
     try{
-        const user = await User.findByIdAndDelete(userId);
-        if(!user) return res.status(404).send({error:`user with id: ${userId} not found!`});
-        res.send(user);
+        // const user = await User.findByIdAndDelete(req.user._id);
+        // if(!user) return res.status(404).send({error:`user with id: ${userId} not found!`});
+        await req.user.remove();
+        res.send(req.user);
     }catch(error){
         res.status(500).send(error);
     }
