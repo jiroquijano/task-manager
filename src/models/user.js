@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema({
     }]
 });
 
+userSchema.virtual('tasks',{ //not saved in MongoDB but serves as a reference to Mongoose about schema relations
+    ref: 'Task',            //reference to Task schema
+    localField: '_id',      //field on current schema
+    foreignField: 'owner'   //field on referenced schema
+});
+
 //setup before 'save' event middleware for hashing password using bcrypt. 
 //2nd parameter should be normal function because arrow function does not do 'this' bindings.
 userSchema.pre('save', async function(next){
