@@ -95,9 +95,7 @@ router.patch('/users/me',authMiddleware, async (req,res)=>{
 //Route for deleting user document referenced by id
 router.delete('/users/me', authMiddleware, async (req,res)=>{
     try{
-        // const user = await User.findByIdAndDelete(req.user._id);
-        // if(!user) return res.status(404).send({error:`user with id: ${userId} not found!`});
-        await req.user.remove();
+        await req.user.deleteOne({_id:req.user._id});
         res.send(req.user);
     }catch(error){
         res.status(500).send(error);

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Task = require('./task');
 
 const userSchema = new mongoose.Schema({
     name:{
@@ -57,11 +58,20 @@ userSchema.virtual('tasks',{ //not saved in MongoDB but serves as a reference to
 
 //setup before 'save' event. Middleware for hashing password using bcrypt. 
 //2nd parameter should be normal function because arrow function does not do 'this' bindings.
+//pre hooks only apply to user instances, not for the whole Schema
 userSchema.pre('save', async function(next){
     const user = this;
     if(user.isModified('password')){ //mongoose method for checking if the field was modified
         user.password = await bcrypt.hash(user.password,8);
     }
+    next();
+});
+
+//pre hook middleware to delete tasks under user before deleting the user
+//option {document:true} is set so that the prehook applies to the document instead of Query
+userSchema.pre('deleteOne',{document: true}, async function (next){
+    const user = this;
+    await Task.deleteMany({ owner: user._id});
     next();
 });
 
