@@ -55,7 +55,7 @@ userSchema.virtual('tasks',{ //not saved in MongoDB but serves as a reference to
     foreignField: 'owner'   //field on referenced schema
 });
 
-//setup before 'save' event middleware for hashing password using bcrypt. 
+//setup before 'save' event. Middleware for hashing password using bcrypt. 
 //2nd parameter should be normal function because arrow function does not do 'this' bindings.
 userSchema.pre('save', async function(next){
     const user = this;
