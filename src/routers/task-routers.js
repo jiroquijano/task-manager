@@ -16,20 +16,22 @@ router.post('/tasks', authMiddleware, async (req,res)=>{
     }
 });
 
-router.get('/tasks', async (req,res)=>{
+router.get('/tasks', authMiddleware, async (req,res)=>{
     try{
-        const results = await Task.find({});
-        res.send(results);
+        //const results = await Task.find({owner: req.user._id});
+        // res.send(results);
+        await req.user.populate('tasks').execPopulate(); //return tasks by populating virtual tasks of User
+        res.send(req.user.tasks);
     }catch(error){
         res.status(500).send();
     }
 
 });
 
-router.get('/tasks/:id',async (req,res)=>{
+router.get('/tasks/:id', authMiddleware, async (req,res)=>{
     const taskId = req.params.id;
     try{
-        const task = await Task.findById(taskId);
+        const task = await Task.findOne({_id: taskId, owner: req.user._id});
         if(!task) return res.status(404).send();
         res.send(task);
     }catch(error){
