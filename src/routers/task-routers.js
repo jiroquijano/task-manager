@@ -40,7 +40,7 @@ router.get('/tasks/:id', authMiddleware, async (req,res)=>{
 
 });
 
-router.patch('/tasks/:id', async (req,res)=>{
+router.patch('/tasks/:id', authMiddleware, async (req,res)=>{
     const updates = Object.keys(req.body);
     const allowedUpdates = ['description','completed'];
     const isUpdateAllowed = updates.every((curr)=>{
@@ -49,12 +49,12 @@ router.patch('/tasks/:id', async (req,res)=>{
 
     if(!isUpdateAllowed) return res.status(400).send({error:'Update contains invalid keys!'});
     try{
-        const task = await Task.findById(req.params.id);
+        const task = await Task.findOne({_id: req.params.id, owner: req.user._id});
+        if(!task) return res.status(404).send({error:`Task with id: ${req.params.id} not found for user!`});
         updates.forEach((update)=>{
             task[update] = req.body[update];
         });
         await task.save();
-        if(!task) return res.status(404).send({error:`Task with id: ${req.params.id} not found!`});
         res.send(task);
     }catch(error){
         res.status(400).send(error);
