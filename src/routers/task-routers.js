@@ -21,9 +21,15 @@ router.post('/tasks', authMiddleware, async (req,res)=>{
 //GET /tasks?sortBy=createdAt:asc
 router.get('/tasks', authMiddleware, async (req,res)=>{
     const match = {};
-    const [sortBy,order] = req.query.sortBy ? req.query.sortBy.split(':') : ['createdAt','asc'];
+    const sort = {};
+    
     if(req.query.completed){
         match.completed = req.query.completed === 'true';
+    }
+
+    if(req.query.sortBy){
+        const sortBy = req.query.sortBy.split(':');
+        sort[sortBy[0]] = sortBy[1] === 'asc' ? 1 : -1;
     }
 
     try{
@@ -33,9 +39,7 @@ router.get('/tasks', authMiddleware, async (req,res)=>{
             options: { //mongoose option includes limit for pagination
                 limit: parseInt(req.query.limit), //NaN is ignored by mongoose, so if limit is not defined, all tasks will be displayed
                 skip: parseInt(req.query.skip),
-                sort:{
-                    [sortBy]: order === 'asc' ? 1 : -1 //this is why I love javascript
-                }
+                sort
             }
         }).execPopulate();
         res.send(req.user.tasks);
