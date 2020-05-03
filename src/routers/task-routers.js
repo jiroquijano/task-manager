@@ -17,21 +17,16 @@ router.post('/tasks', authMiddleware, async (req,res)=>{
 });
 
 router.get('/tasks', authMiddleware, async (req,res)=>{
+    const match = {};
+    
+    if(req.query.completed){
+        match.completed = req.query.completed === 'true';
+    }
+
     try{
-        const query = req.query.completed;
-        if(!query){
-            //const results = await Task.find({owner: req.user._id});
-            // res.send(results);
-            await req.user.populate('tasks').execPopulate(); //return tasks by populating virtual tasks of User
-            return res.send(req.user.tasks);
-        }
-        // const results = await Task.find({completed:query});
-        // return res.send(results);
         await req.user.populate({ //populates virtual field tasks with conditions in 'match'
             path: 'tasks',
-            match:{
-                completed:query
-            }
+            match
         }).execPopulate();
         res.send(req.user.tasks);
     }catch(error){
