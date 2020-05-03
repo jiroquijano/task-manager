@@ -16,9 +16,11 @@ router.post('/tasks', authMiddleware, async (req,res)=>{
     }
 });
 
+//GET /tasks?completed=true
+//GET /tasks?limit=10&skip=0 --- limit is items per page, skip is... pages skipped
 router.get('/tasks', authMiddleware, async (req,res)=>{
     const match = {};
-    
+
     if(req.query.completed){
         match.completed = req.query.completed === 'true';
     }
@@ -26,7 +28,11 @@ router.get('/tasks', authMiddleware, async (req,res)=>{
     try{
         await req.user.populate({ //populates virtual field tasks with conditions in 'match'
             path: 'tasks',
-            match
+            match,
+            options: { //mongoose option includes limit for pagination
+                limit: parseInt(req.query.limit), //NaN is ignored by mongoose, so if limit is not defined, all tasks will be displayed
+                skip: parseInt(req.query.skip)
+            }
         }).execPopulate();
         res.send(req.user.tasks);
     }catch(error){
