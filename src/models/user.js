@@ -48,6 +48,8 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
+}, {
+    timestamps: true
 });
 
 userSchema.virtual('tasks',{ //not saved in MongoDB but serves as a reference to Mongoose about schema relations
