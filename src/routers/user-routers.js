@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/auth');
 const router = new express.Router();
 
 const upload = multer({
-    dest: 'images'
+    dest: 'avatars'
 });
 
 router.post('/users/me/avatar', upload.single('avatar'), (req,res)=>{
