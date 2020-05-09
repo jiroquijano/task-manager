@@ -1,8 +1,16 @@
 const express = require('express');
 const User = require('../models/user');
+const multer = require('multer');
 const authMiddleware = require('../middleware/auth');
 const router = new express.Router();
 
+const upload = multer({
+    dest: 'images'
+});
+
+router.post('/users/me/avatar', upload.single('avatar'), (req,res)=>{
+    res.send('Image uploaded');
+});
 
 //get all users using mongoose method find({...query})
 router.get('/users/me', authMiddleware, async (req,res)=>{
