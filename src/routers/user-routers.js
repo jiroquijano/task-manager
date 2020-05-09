@@ -19,6 +19,8 @@ const upload = multer({
 
 router.post('/users/me/avatar', upload.single('avatar'), (req,res)=>{
     res.send('Image uploaded');
+},(error, req, res, next)=>{ //express executes this function when an error is thrown by middleware
+    res.status(400).send({error:error.message});
 });
 
 //get all users using mongoose method find({...query})
