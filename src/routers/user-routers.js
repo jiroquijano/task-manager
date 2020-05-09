@@ -5,7 +5,6 @@ const authMiddleware = require('../middleware/auth');
 const router = new express.Router();
 
 const upload = multer({
-    dest: 'avatars',
     limits:{
         fileSize: 2000000
     },
@@ -17,10 +16,22 @@ const upload = multer({
     }
 });
 
-router.post('/users/me/avatar', upload.single('avatar'), (req,res)=>{
+router.post('/users/me/avatar', authMiddleware, upload.single('avatar'), async (req,res)=>{
+    req.user.avatar = req.file.buffer;
+    await req.user.save();
     res.send('Image uploaded');
 },(error, req, res, next)=>{ //express executes this function when an error is thrown by middleware
     res.status(400).send({error:error.message});
+});
+
+router.delete('/users/me/avatar',authMiddleware, async(req,res)=>{
+    try{
+        req.user.avatar = undefined;
+        await req.user.save();
+        res.send();
+    }catch(error){
+        res.status(400).send({error:error.message})
+    }
 });
 
 //get all users using mongoose method find({...query})
