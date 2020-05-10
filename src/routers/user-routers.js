@@ -3,6 +3,7 @@ const User = require('../models/user');
 const multer = require('multer');
 const authMiddleware = require('../middleware/auth');
 const router = new express.Router();
+const sharp = require('sharp');
 
 const upload = multer({
     limits:{
@@ -17,7 +18,8 @@ const upload = multer({
 });
 
 router.post('/users/me/avatar', authMiddleware, upload.single('avatar'), async (req,res)=>{
-    req.user.avatar = req.file.buffer;
+    const buffer = await sharp(req.file.buffer).resize({width: 250, height: 250}).png().toBuffer(); //format file buffer to png and resize
+    req.user.avatar = buffer;
     await req.user.save();
     res.send('Image uploaded');
 },(error, req, res, next)=>{ //express executes this function when an error is thrown by middleware
@@ -38,7 +40,7 @@ router.get('/users/:id/avatar', async(req,res)=>{
     try{
         const user = await User.findById(req.params.id);
         if(!user || !user.avatar) throw new Error();
-        res.set('Content-Type','image/jpg');
+        res.set('Content-Type','image/png');
         res.send(user.avatar);
     }catch(error){
         res.status(404).send({error:error.message});
