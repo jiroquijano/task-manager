@@ -4,7 +4,7 @@ const User = require('../models/user');
 const auth = async(req,res,next)=>{
     try{
         const token = req.header('Authorization').replace('Bearer ','');
-        const decoded = jwt.verify(token, 'thisismynewcourse');
+        const decoded = jwt.verify(token, process.env.USER_TOKEN_SECRET);
         const user = await User.findOne({ 
             _id: decoded._id, //find a user in db with id matching token info
             'tokens.token': token //and where available tokens in db matched to used token in request
