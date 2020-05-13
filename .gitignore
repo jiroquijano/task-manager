@@ -1,3 +1,5 @@
 node_modules/
 playground/
 config/
+src/math.js
+tests/math.test.js
