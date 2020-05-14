@@ -3,17 +3,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const app = require('../src/index');
 const User = require('../src/models/user');
-
-const userFixtureId = new mongoose.Types.ObjectId();
-const userFixture = {
-    _id: userFixtureId,
-    name: 'Bonna',
-    email: 'bonniedummyacct@gmail.com',
-    password: 'Halikachik_038',
-    tokens: [{
-        token: jwt.sign({_id: userFixtureId}, process.env.USER_TOKEN_SECRET)
-    }]
-};
+const {userFixture, userFixtureId} = require('../tests/fixtures/db');
 
 beforeEach( async ()=>{ //jest function which is being run before every test is executed
     await User.deleteMany({});
