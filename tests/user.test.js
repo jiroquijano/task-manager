@@ -46,10 +46,20 @@ test('Should signup a new user', async()=>{
 });
 
 test('Should log in existing user', async()=>{
-    await request(app).post('/users/login').send({
+    const response = await request(app).post('/users/login').send({
         email: userFixture.email,
         password: userFixture.password
     }).expect(200);
+
+    const userFromDB = await User.findById(userFixtureId);
+    expect(response.body).toMatchObject({
+        user:{
+            name: userFixture.name,
+            email: userFixture.email
+        },
+        token: userFromDB.tokens[1].token
+    });
+
 });
 
 test('Should prevent login when credentials not correct', async()=>{
@@ -75,10 +85,13 @@ test('Should not be able to view profile when token is wrong', async()=>{
 });
 
 test('Should be able to delete account', async()=>{
-    await request(app).delete('/users/me')
+    const response = await request(app).delete('/users/me')
         .set('Authorization', `Bearer ${userFixture.tokens[0].token}`)
         .expect(200)
-        .send() 
+        .send();
+    
+    const deletedUser = await User.findById(response.body._id);
+    expect(deletedUser).toBeNull();
 });
 
 test('Should not be able to delete account of others', async()=>{
