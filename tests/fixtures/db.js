@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const User = require('../../src/models/user');
+const Task = require('../../src/models/task');
 
 const userFixtureId = new mongoose.Types.ObjectId();
 const userFixture = {
@@ -12,7 +14,14 @@ const userFixture = {
     }]
 };
 
+const setupDatabase = async()=>{
+    await User.deleteMany({});
+    await Task.deleteMany({});
+    await new User(userFixture).save();
+};
+
 module.exports = {
     userFixture,
-    userFixtureId
+    userFixtureId,
+    setupDatabase
 }

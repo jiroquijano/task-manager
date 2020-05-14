@@ -3,11 +3,10 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const app = require('../src/index');
 const User = require('../src/models/user');
-const {userFixture, userFixtureId} = require('../tests/fixtures/db');
+const {userFixture, userFixtureId, setupDatabase} = require('../tests/fixtures/db');
 
 beforeEach( async ()=>{ //jest function which is being run before every test is executed
-    await User.deleteMany({});
-    await new User(userFixture).save();
+    await setupDatabase();
 });
 
 test('Should signup a new user', async()=>{
