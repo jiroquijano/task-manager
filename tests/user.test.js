@@ -30,6 +30,19 @@ test('Should signup a new user', async()=>{
     //assert that the response body's user has id
     const user = await User.findById(response.body.user._id);
     expect(user).not.toBeNull();
+
+    //compares expectation to an object
+    expect(response.body).toMatchObject({
+        user:{
+            name: 'Jiro',
+            email: 'jirodummyacct@gmail.com'
+        },
+        token: user.tokens[0].token
+    });
+
+    //checks if password became hashed (kind of)
+    expect(user.password).not.toBe('Decipher_0731');
+
 });
 
 test('Should log in existing user', async()=>{
