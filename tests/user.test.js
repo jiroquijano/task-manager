@@ -5,6 +5,12 @@ const app = require('../src/index');
 const User = require('../src/models/user');
 const {userFixture, userFixtureId, setupDatabase} = require('../tests/fixtures/db');
 
+//ADDITIONAL TEST CASES (for practice)
+// Should not signup user with invalid name/email/password
+// Should not update user if unauthenticated
+// Should not update user with invalid name/email/password
+// Should not delete user if unauthenticated
+
 beforeEach( async ()=>{ //jest function which is being run before every test is executed
     await setupDatabase();
 });
